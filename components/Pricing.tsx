@@ -1,93 +1,93 @@
-// Three plans, but the honest headline is that the safety part is free.
-// We only charge for the extras, and banks are a separate conversation.
+// Free is genuinely free. Premium is for families who want to practice. Banks pay.
+type Plan = {
+  name: string
+  price: string
+  priceNote?: string
+  desc: string
+  features: string[]
+  cta: string
+  ctaStyle: "btn-primary" | "btn-ghost"
+  featured?: boolean
+  tag?: string
+}
+
+const plans: Plan[] = [
+  {
+    name: "Free",
+    price: "$0",
+    desc: "Everything a family needs to stay safe.",
+    features: [
+      "Pair with your whole family",
+      "One-tap verify and red alert",
+      "Offline family code",
+      "Big buttons, built for elders",
+    ],
+    cta: "Join the waitlist",
+    ctaStyle: "btn-ghost",
+  },
+  {
+    name: "Premium",
+    price: "$4",
+    priceNote: " /month per family",
+    desc: "For families who want to stay sharp.",
+    features: [
+      "Everything in Free",
+      "Scam drills to practice fake calls",
+      "Live scam-alert feed",
+      "Unlimited family members",
+      "Priority support",
+    ],
+    cta: "Get early access",
+    ctaStyle: "btn-primary",
+    featured: true,
+    tag: "Most popular",
+  },
+  {
+    name: "Banks & partners",
+    price: "Let's talk",
+    desc: "Verify a customer request before the money moves.",
+    features: ["Verified-request API", "White-label options", "Built for reimbursement rules"],
+    cta: "Talk to us",
+    ctaStyle: "btn-ghost",
+  },
+]
+
 export default function Pricing() {
   return (
     <section className="block" id="pricing">
       <div className="wrap">
-        <div className="section-head">
+        <div className="section-head reveal">
           <span className="eyebrow">Pricing</span>
           <h2>Safety is free. Always.</h2>
           <p>
-            The part that keeps your family safe costs nothing and always will.
-            Pay only if you want the extra practice and alerts.
+            The part that keeps your family safe costs nothing and always will. Pay only if you want
+            the extra practice and alerts.
           </p>
         </div>
         <div className="pricing">
-          <div className="plan">
-            <div className="pname">Free</div>
-            <div className="price">$0</div>
-            <div className="desc">Everything a family needs to stay safe.</div>
-            <ul>
-              <li>
-                <span className="ck">✓</span> Pair with your whole family
-              </li>
-              <li>
-                <span className="ck">✓</span> One-tap verify and red alert
-              </li>
-              <li>
-                <span className="ck">✓</span> Offline family code
-              </li>
-              <li>
-                <span className="ck">✓</span> Big buttons, built for elders
-              </li>
-            </ul>
-            <a href="#waitlist" className="btn btn-ghost">
-              Join the waitlist
-            </a>
-          </div>
-
-          <div className="plan feature">
-            <div className="tag">Most popular</div>
-            <div className="pname">Premium</div>
-            <div className="price">
-              $4<span> /month per family</span>
+          {plans.map((p) => (
+            <div className={`plan reveal${p.featured ? " feature" : ""}`} key={p.name}>
+              {p.tag ? <div className="tag">{p.tag}</div> : null}
+              <div className="pname">{p.name}</div>
+              <div className="price">
+                {p.price}
+                {p.priceNote ? <span>{p.priceNote}</span> : null}
+              </div>
+              <div className="desc">{p.desc}</div>
+              <ul>
+                {p.features.map((f) => (
+                  <li key={f}>
+                    <span className="ck">&#10003;</span> {f}
+                  </li>
+                ))}
+              </ul>
+              <a href="#waitlist" className={`btn ${p.ctaStyle}`}>
+                {p.cta}
+              </a>
             </div>
-            <div className="desc">For families who want to stay sharp.</div>
-            <ul>
-              <li>
-                <span className="ck">✓</span> Everything in Free
-              </li>
-              <li>
-                <span className="ck">✓</span> Scam drills to practice fake calls
-              </li>
-              <li>
-                <span className="ck">✓</span> Live scam-alert feed
-              </li>
-              <li>
-                <span className="ck">✓</span> Unlimited family members
-              </li>
-              <li>
-                <span className="ck">✓</span> Priority support
-              </li>
-            </ul>
-            <a href="#waitlist" className="btn btn-primary">
-              Get early access
-            </a>
-          </div>
-
-          <div className="plan">
-            <div className="pname">Banks &amp; partners</div>
-            <div className="price">Let&apos;s talk</div>
-            <div className="desc">
-              Verify a customer request before the money moves.
-            </div>
-            <ul>
-              <li>
-                <span className="ck">✓</span> Verified-request API
-              </li>
-              <li>
-                <span className="ck">✓</span> White-label options
-              </li>
-              <li>
-                <span className="ck">✓</span> Built for reimbursement rules
-              </li>
-            </ul>
-            <a href="#waitlist" className="btn btn-ghost">
-              Talk to us
-            </a>
-          </div>
+          ))}
         </div>
       </div>
     </section>
-  );
+  )
 }
