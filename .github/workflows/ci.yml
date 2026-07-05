@@ -1,0 +1,40 @@
+# Runs on every push and every pull request.
+# The goal is simple: nothing broken ever reaches the main branch.
+# It lints, type-checks, and does a full production build. If any of those fail,
+# the check goes red and we know before it ships.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Lint, type-check and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Using install (not ci) on purpose: we do not commit a lockfile yet.
+      # Once the first real install pins a package-lock.json, switch to npm ci.
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
