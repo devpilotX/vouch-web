@@ -1,77 +1,77 @@
-"use client";
+"use client"
 
-import { useState, type FormEvent } from "react";
+// The email capture. Same little form in the hero and at the bottom.
+// Talks to /api/waitlist, keeps its own tiny bit of state.
+import { useState, type FormEvent } from "react"
 
-// This is the email box you see in the hero and again at the bottom of the page.
-// Both spots share this one component so they always behave the same way.
-// It talks to /api/waitlist and swaps itself out for a thank you once you are in.
-
-type Status = "idle" | "loading" | "done" | "error";
+type Props = {
+  // button text changes a bit depending on where the form sits
+  buttonLabel?: string
+  placeholder?: string
+}
 
 export default function WaitlistForm({
-  cta = "Get early access",
-}: {
-  cta?: string;
-}) {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<Status>("idle");
-  const [message, setMessage] = useState("");
+  buttonLabel = "Get early access",
+  placeholder = "you@email.com",
+}: Props) {
+  const [email, setEmail] = useState("")
+  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle")
+  const [error, setError] = useState("")
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setStatus("loading");
-    setMessage("");
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault()
+    setError("")
 
+    const value = email.trim()
+    // cheap client side check so we do not bug the server for obvious typos
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      setStatus("error")
+      setError("That email looks off. Mind checking it?")
+      return
+    }
+
+    setStatus("loading")
     try {
-      const response = await fetch("/api/waitlist", {
+      const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await response.json();
-
-      if (!response.ok || !data.ok) {
-        throw new Error(data.error || "We could not sign you up. Try again?");
+        body: JSON.stringify({ email: value }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.ok) {
+        setStatus("error")
+        setError(data.error || "Something broke on our end. Give it another go.")
+        return
       }
-
-      setStatus("done");
-      setMessage("You are on the list. We will be in touch soon.");
-      setEmail("");
-    } catch (error) {
-      setStatus("error");
-      setMessage(
-        error instanceof Error ? error.message : "Something went wrong.",
-      );
+      setStatus("done")
+    } catch {
+      setStatus("error")
+      setError("Could not reach us. Check your connection and try again.")
     }
   }
 
-  // Once someone is in, drop the form and just say thanks.
+  // once they are in, swap the form for a friendly confirmation
   if (status === "done") {
     return (
       <div className="signup-done">
-        <span className="dot" /> {message}
+        <span className="dot" /> You are on the list. We will be in touch soon.
       </div>
-    );
+    )
   }
 
   return (
-    <form className="signup" onSubmit={handleSubmit}>
+    <form className="signup" onSubmit={onSubmit} noValidate>
       <input
         type="email"
-        required
-        placeholder="you@email.com"
-        aria-label="Email address"
         value={email}
-        onChange={(event) => setEmail(event.target.value)}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder={placeholder}
+        aria-label="Email address"
       />
-      <button
-        className="btn btn-primary"
-        type="submit"
-        disabled={status === "loading"}
-      >
-        {status === "loading" ? "Just a sec..." : cta}
+      <button className="btn btn-primary" type="submit" disabled={status === "loading"}>
+        {status === "loading" ? "Just a sec..." : buttonLabel}
       </button>
-      {status === "error" ? <p className="signup-error">{message}</p> : null}
+      {error ? <div className="signup-error">{error}</div> : null}
     </form>
-  );
+  )
 }

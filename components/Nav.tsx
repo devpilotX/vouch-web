@@ -1,17 +1,15 @@
-import Logo from "./Logo";
+// Sticky top bar. Stays out of the way, one clear call to action on the right.
+import Logo from "./Logo"
 
-// Sticky top bar. Stays out of the way but keeps the waitlist button one glance away.
 export default function Nav() {
   return (
     <header className="nav">
       <div className="wrap nav-inner">
-        <div className="logo">
-          <Logo />
-          Vouch
-        </div>
+        <Logo />
         <nav className="nav-links">
           <a href="#how">How it works</a>
           <a href="#why">Why it works</a>
+          <a href="#security">Security</a>
           <a href="#pricing">Pricing</a>
           <a href="#faq">FAQ</a>
         </nav>
@@ -22,5 +20,5 @@ export default function Nav() {
         </div>
       </div>
     </header>
-  );
+  )
 }
